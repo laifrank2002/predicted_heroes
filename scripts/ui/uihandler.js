@@ -20,6 +20,7 @@ var UI_handler = (
 				var main = new UIWindow(0,0,800,600,"Project Hero");
 				ui.push(main);
 				
+				main.addSubElement(new MapView(World.map),200,50);
 				/*
 				// Introduction!
 				var introduction = new UIWindow(100,100,600,400,"Uncle's Letter",false,true);

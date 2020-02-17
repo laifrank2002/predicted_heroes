@@ -22,6 +22,11 @@ function Agent(hitpoints = Agent.prototype.DEFAULT_HITPOINTS
 	this.age = 0;
 	this.active = true;
 	this.movable = true;
+	
+	// targetting
+	this.target = null;
+	
+	this.message_log = [];
 }
 
 Agent.prototype = Object.create(MapObject.prototype);
@@ -73,4 +78,10 @@ Agent.prototype.tick = function()
 Agent.prototype.on_kill = function(agent)
 {
 	
+}
+
+Agent.prototype.log = function(message)
+{
+	// take the current year of the world.
+	this.message_log.push("Y" + World.year + ": " + message);
 }

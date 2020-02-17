@@ -5,9 +5,13 @@ var images = {
 
 window.onload = function()
 {
+	World.generate_map();
+	
 	Engine.initialize();
 	
-	World.generate_map();
 	World.new_generation();
-	World.map.print("heroes");
+	//World.map.print("heroes");
+	
+	setInterval(World.tick.bind(World),10)
+
 }

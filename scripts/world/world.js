@@ -30,12 +30,23 @@ var World = {
 	
 	generate_heroes: function()
 	{
-		for(var i = 0; i < this.heroes_per_generation; i++) this.heroes.push(new Hero(this.development_level));
-		// now spawn 'em 
-		for(var i = 0; i < this.heroes.length; i++)
+		// now spawn 'em 		
+		for(var i = 0; i < this.heroes_per_generation + this.towns.length; i++)
 		{
-			// spawn SOMEWHERE!
-			this.map.plopObject(this.heroes[i], random_integer(0, this.map.width), random_integer(0, this.map.height));
+			var hero;
+			// spawn SOMEWHERE! (if there are no towns yet)
+			if(this.towns.length <= 0)
+			{
+				hero = new Hero(0);
+				this.map.plopObject(hero, random_integer(0, this.map.width), random_integer(0, this.map.height));
+			}
+			else 
+			{
+				var town = this.towns[random_integer(0, this.towns.length)];
+				hero = new Hero(town.development);
+				this.map.plopObject(hero, town.x, town.y);
+			}
+			this.heroes.push(hero);
 		}
 	},
 	

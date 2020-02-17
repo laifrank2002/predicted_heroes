@@ -8,11 +8,15 @@ function Town(settlers)
 	settlers.forEach(hero => hero.retire());
 	this.resources = 0;
 	settlers.forEach(hero => {this.resources += hero.loot / this.LOOT_TO_RESOURCE_RATIO; hero.loot = 0});
-	this.fame = 0;
 	this.gold = 0;
 	settlers.forEach(hero => {this.gold += hero.gold; hero.gold = 0});
 	this.population = settlers.length;
 	this.residents = settlers;
+	
+	this.fame = 0;
+	this.development = 1;
+	
+	this.leader = this.residents[0];
 	
 	World.log(`A town has formed! Under the watchful eyes of its leader, ${this.residents[0].name}, it will surely grow and prosper. It currently has a population of ${this.population} people, with a treasury of ${this.gold} gold and a warehouse full of ${this.resources} resources.`);
 	World.register_town(this);
@@ -36,7 +40,7 @@ Town.prototype.buy_loot = function(hero)
 	if(loot * price > this.gold) loot = this.gold / price;
 	
 	hero.loot -= loot;
-	hero.gold *= loot * price;
+	hero.gold += loot * price;
 	
 	this.resources += loot / this.LOOT_TO_RESOURCE_RATIO;
 	this.gold -= loot * price;
@@ -44,14 +48,16 @@ Town.prototype.buy_loot = function(hero)
 
 Town.prototype.sell_equipment = function(hero, type)
 {
-	if(hero.gold >= hero.level)
+	var level = Math.min(hero.level, this.development);
+	
+	if(hero.gold >= level)
 	{
-		if(this.resources > 10)
+		if(this.resources > level)
 		{
-			var equipment = new Equipment(hero.level, type);
+			var equipment = new Equipment(level, type);
 			hero.equipment[type] = equipment;
-			hero.gold -= hero.level;
-			this.resources -= 10;
+			hero.gold -= level;
+			this.resources -= level;
 		}
 	}
 }
@@ -72,12 +78,23 @@ Town.prototype.retire_hero = function(hero)
 Town.prototype.tick = function()
 {
 	this.gold += Math.floor(Math.sqrt(this.population));
-	
+	// we increase development by consuming resources. The more, the more. 
+	this.resources -= this.development;
+	if(this.resources < 0)
+	{
+		this.resources+=this.development*100;
+		this.development--;
+	}
+	else if (this.resources > (this.development * 2) * 100) // just so the town can have enuff
+	{
+		this.resources -= (this.development + 1) * 100;
+		this.development++;
+	}
 	// age all its residents.
 	this.residents.forEach(resident => resident.tick());
 }
 
 Town.prototype.new_era = function()
 {
-	this.fame += Math.floor(Math.sqrt(this.resources));
+	
 }

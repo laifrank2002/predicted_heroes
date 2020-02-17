@@ -29,13 +29,9 @@ function UIElement(x,y,width,height,type = "generic",onmouseclick = null)
 	this.height = height;
 	this.onmouseclick = onmouseclick;
 
-	this.mousedown = null;
-	
-	this.paint = null;
 	this.type = type;
 	// element interactions
 	this.children = [];
-	this.parent = null;
 	this.hidden = false;
 	this.focused = false;
 }

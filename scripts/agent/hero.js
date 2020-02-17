@@ -29,10 +29,12 @@ function Hero(predicted_hero_score)
 	this.level = this.phs;
 	
 	this.score = 0;
+	this.statistics = {
+		kills: 0,
+		dungeon_clears: 0,
+	}
 	
 	this.equipment = {"weapon":null,"armour":null};
-	
-	this.message_log = [];
 }
 
 Hero.prototype = Object.create(Agent.prototype);
@@ -125,8 +127,13 @@ Hero.prototype.on_kill = function(agent)
 		this.receive_xp(xp);
 		
 		this.score += agent.power_level; 
+		this.statistics.kills++;
 	}
-	
+}
+
+Hero.prototype.on_dungeon_clear = function()
+{
+	this.statistics.dungeon_clears++;
 }
 
 Hero.prototype.receive_xp = function(amount)
@@ -167,16 +174,19 @@ Hero.prototype.print_log = function()
 	}
 }
 
-Hero.prototype.log = function(message)
-{
-	// take the current year of the world.
-	this.message_log.push("Y" + World.year + ": " + message);
-}
-
 Hero.prototype.retire = function()
 {
 	World.retire_hero(this);
-	this.log(`Hero ${this.name} has successfully retired at an age of ${this.age}.`);
+	var success_string = "";
+	if(this.predict_hero_score() < this.score)
+	{
+		success_string = `They were a hero, as they have beaten their predicted hero score of ${this.predict_hero_score()} with a score of ${this.score}.`;
+	}
+	else 
+	{
+		success_string = `They were a dismal failure, as they have failed to beat their predicted hero score of ${this.predict_hero_score()} with a score of ${this.score}.`;
+	}
+	this.log(`Hero ${this.name} has retired at an age of ${this.age}.${success_string}`);
 }
 
 /* 
@@ -200,9 +210,9 @@ Hero.prototype.buy_equipment = function(town)
 {
 	for(var type in this.equipment)
 	{
-		if(!this.equipment[type] || (this.equipment[type].power_level < this.level))
+		if(!this.equipment[type] || (this.equipment[type].power_level < this.level) && (town.development > this.equipment[type].power_level))
 		{
-			// try to buy if the power_level's not right 
+			// only buy if we can get stronger by buying
 			town.sell_equipment(this, type);
 		}
 	}

@@ -23,6 +23,8 @@
 		<script src="scripts/agent/equipment.js"></script>
 		<script src="scripts/world/world.js"></script>
 		<script src="scripts/world/town.js"></script>
+		
+		<script src="scripts/views/map_view.js"></script>
 
     </head>
     <body>
@@ -30,5 +32,7 @@
 		<div id="content"></div>
 		<h2>What is this?</h2>
 		<p>A fun little side project that I got carried away with. Hint: look in the console for now. World.tick() will advance the world. Inspect the world to see what has happened.</p>
+		<h2>What are those swirling colours?</h2>
+		<p>The map. Calculated using relative values, representing the density of monsters, heroes, and towns as R, G, and B repsectively. So then, in a world with a tile of 2 and 1 monsters, the 1st tile would be fully bright, while the second would only be as half as bright.</p>
     </body>
 </html>

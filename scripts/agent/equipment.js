@@ -13,6 +13,6 @@ function Equipment(power_level, type)
 			break;
 		default:
 			this.power = random_integer(power_level * (1 - 0.5), power_level * (1 + 0.5));
-	}
-	
+			break;
+	}	
 }

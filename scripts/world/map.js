@@ -11,10 +11,16 @@ function Map(width,height)
 	}
 	
 	this.objects = [];
+	
+	this.highestMonsterCount = 0;
+	this.highestHeroCount = 0;
 }
 
 Map.prototype.tick = function()
 {
+	this.highestMonsterCount = 0;
+	this.highestHeroCount = 0;
+	
 	this.objects.forEach(object => 
 	{
 		object.tick();
@@ -49,6 +55,11 @@ Map.prototype.tick = function()
 	for(var index = 0, length = this.width * this.height; index < length; index++)
 	{
 		var tile = this.tiles[index];
+		
+		// set highest monster and hero counts 
+		if(tile.heroes.length > this.highestHeroCount) this.highestHeroCount = tile.heroes.length;
+		if(tile.monsters.length > this.highestMonsterCount) this.highestMonsterCount = tile.monsters.length;
+		
 		// heroes will randomly battle a random monster.
 		if(tile.heroes.length > 0 && tile.monsters.length > 0)
 		{
@@ -66,7 +77,7 @@ Map.prototype.tick = function()
 				hero.sell_loot(tile.town);
 				hero.buy_equipment(tile.town);
 				// check health, and a bit of random 
-				if(Math.random() < 0.25 && hero.hitpoints < 5)
+				if(Math.random() < 0.10 && hero.score > hero.predict_hero_score())
 				{
 					tile.town.retire_hero(hero); // more people will settle down!
 				}
@@ -81,7 +92,7 @@ Map.prototype.tick = function()
 				{
 					var gold = 0;
 					tile.heroes.forEach(hero => gold+=hero.gold);
-					if(gold >= 10)
+					if(gold >= 100 * World.towns.length)
 					{
 						this.plopObject(new Town(tile.heroes),tile.x,tile.y);
 					}
@@ -109,6 +120,10 @@ Map.prototype.plopObject = function(object, x, y)
 	// since it is all clear, then proceed and set everything
 	occupiedTile.addObject(object);
 	this.addObject(object);
+	
+	// set highest monster and hero counts 
+	if(occupiedTile.heroes.length > this.highestHeroCount) this.highestHeroCount = occupiedTile.heroes.length;
+	if(occupiedTile.monsters.length > this.highestMonsterCount) this.highestMonsterCount = occupiedTile.monsters.length;
 	return true;
 }
 
